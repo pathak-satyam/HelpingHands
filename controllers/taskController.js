@@ -4,7 +4,6 @@ const { taskEvents, EVENT_TYPES } = require('../utils/observer');
 
 // Show task creation form
 exports.showCreateTask = (req, res) => {
-  console.log(req.session)
   if (!req.session.user) {
     return res.redirect('/login');
   }
@@ -17,7 +16,7 @@ exports.createTask = async (req, res) => {
     if (!req.session.user) {
       return res.redirect('/login');
     }
-    
+
     const { title, description } = req.body;
     const task = new Task({
       title,
@@ -26,15 +25,13 @@ exports.createTask = async (req, res) => {
       ownerEmail: req.session.user.email,
       volunteers: []
     });
-    
+
     await task.save();
-    
-    // Emit task created event (Observer pattern)
     taskEvents.emit(EVENT_TYPES.TASK_CREATED, task);
-    
+
     res.redirect('/requester/dashboard');
   } catch (err) {
-    res.status(500).render('requester/create', { 
+    res.status(500).render('requester/create', {
       error: 'Failed to create task: ' + err.message,
       formData: req.body
     });
@@ -59,21 +56,18 @@ exports.deleteTask = async (req, res) => {
   }
 };
 
-
 // List all tasks
 exports.listTasks = async (req, res) => {
   try {
     if (!req.session.user) {
       return res.redirect('/login');
     }
-    
+
     let tasks;
     if (req.session.user.accountType === 'requester') {
-      // For requesters, show their own tasks
       tasks = await Task.find({ ownerId: req.session.user._id });
       res.render('requester/list', { tasks, isOwner: true });
     } else {
-      // For volunteers, show available tasks they haven't volunteered for
       tasks = await Task.find({ volunteers: { $ne: req.session.user.email } });
       res.render('requester/list', { tasks, isOwner: false });
     }
@@ -90,16 +84,10 @@ exports.showTaskDetailsForOwner = async (req, res) => {
     }
 
     const task = await Task.findById(req.params.id);
-
-    if (!task) {
-      return res.status(404).send('Task not found');
-    }
+    if (!task) return res.status(404).send('Task not found');
 
     const isOwner = task.ownerId.toString() === req.session.user._id.toString();
-
-    if (!isOwner) {
-      return res.status(403).send('Access denied');
-    }
+    if (!isOwner) return res.status(403).send('Access denied');
 
     res.render('requester/details', { task });
   } catch (err) {
@@ -110,29 +98,26 @@ exports.showTaskDetailsForOwner = async (req, res) => {
 // Remove volunteer (T2.2)
 exports.removeVolunteer = async (req, res) => {
   try {
-    if (!req.session.user) {
-      return res.redirect('/login');
-    }
-    
+    if (!req.session.user) return res.redirect('/login');
+
     const { taskId, volunteerEmail } = req.body;
     const task = await Task.findById(taskId);
-    
-    if (!task) {
-      return res.status(404).send('Task not found');
-    }
-    
-    // Verify the user is the owner
+    if (!task) return res.status(404).send('Task not found');
+
     if (task.ownerId.toString() !== req.session.user._id.toString()) {
       return res.status(403).send('Unauthorized');
     }
-    
-    // Remove volunteer from task
+
     task.volunteers = task.volunteers.filter(email => email !== volunteerEmail);
     await task.save();
-    
-    // Emit volunteer removed event
+
     taskEvents.emit(EVENT_TYPES.VOLUNTEER_REMOVED, { task, volunteerEmail });
-    
+
+    // Set flag to notify on next login if the current user is the volunteer
+    if (req.session && req.session.user && req.session.user.email === volunteerEmail) {
+      req.session.wasDismissed = true;
+    }
+
     res.redirect(`/requester/${taskId}`);
   } catch (err) {
     res.status(500).send('Error removing volunteer: ' + err.message);
@@ -142,31 +127,37 @@ exports.removeVolunteer = async (req, res) => {
 // Statistics for tasks and volunteers (T8)
 exports.getStatistics = async (req, res) => {
   try {
-    if (!req.session.user) {
-      return res.redirect('/login');
-    }
-    
+    if (!req.session.user) return res.redirect('/login');
+
     const tasks = await Task.find();
     const totalTasks = tasks.length;
-    
-    // Count total volunteers across all tasks (may contain duplicates)
-    const totalVolunteersWithDuplicates = tasks.reduce((sum, task) => sum + task.volunteers.length, 0);
-    
-    // Count unique volunteers across all tasks
+    const totalVolunteersWithDuplicates = tasks.reduce((sum, t) => sum + t.volunteers.length, 0);
     const uniqueVolunteers = new Set();
-    tasks.forEach(task => {
-      task.volunteers.forEach(volunteer => uniqueVolunteers.add(volunteer));
-    });
-    
+    tasks.forEach(t => t.volunteers.forEach(v => uniqueVolunteers.add(v)));
+
     const stats = {
       totalTasks,
       totalVolunteersWithDuplicates,
       uniqueVolunteers: uniqueVolunteers.size,
       averageVolunteersPerTask: totalTasks > 0 ? (totalVolunteersWithDuplicates / totalTasks).toFixed(1) : 0
     };
-    
+
     res.render('requester/statistics', { stats });
   } catch (err) {
     res.status(500).send('Error generating statistics: ' + err.message);
+  }
+};
+
+exports.showVolunteerStats = async (req, res) => {
+  try {
+    if (!req.session.user) {
+      return res.redirect('/login');
+    }
+
+    const tasks = await Task.find({ ownerId: req.session.user._id });
+
+    res.render('requester/stats', { tasks });
+  } catch (err) {
+    res.status(500).send('Error fetching volunteers: ' + err.message);
   }
 };

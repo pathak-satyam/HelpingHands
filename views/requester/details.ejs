@@ -14,9 +14,10 @@
 
     .container {
       background: white;
-      padding: 30px;
+      padding: 25px;
       border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
     }
 
     h1 {
@@ -32,20 +33,95 @@
       padding-left: 20px;
     }
 
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
     .volunteers li {
-      margin-bottom: 5px;
+      margin-bottom: 10px;
+    }
+
+    .back-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .back-link a {
+      color: #2196F3;
+      text-decoration: none;
+    }
+
+    .back-link a:hover {
+      text-decoration: underline;
+    }
+
+    .dismiss-btn {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+
+    /* Modal */
+    #custom-confirm {
+      display: none;
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      text-align: center;
+      width: 300px;
+    }
+
+    #custom-confirm p {
+      margin-bottom: 20px;
+    }
+
+    #custom-confirm button {
+      margin: 5px;
+      padding: 6px 12px;
+      font-size: 14px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    #confirm-yes {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    #confirm-no {
+      background-color: #9E9E9E;
+      color: white;
     }
   </style>
 </head>
 <body>
+  <div class="header">
+    <h1>Task Details</h1>
+    <a href="/logout">Logout</a>
+  </div>
+
   <div class="container">
-    <h1><%= task.title %> </h1> <a href="/logout">Logout</a>
+    <h1><%= task.title %></h1>
 
     <div class="meta">
       <strong>Description:</strong>
       <p><%= task.description %></p>
 
-      <strong>Status:</strong> <%= task.status %><br/>
       <strong>Created At:</strong> <%= task.createdAt.toLocaleString() %><br/>
       <strong>Owner Email:</strong> <%= task.ownerEmail %>
     </div>
@@ -57,13 +133,58 @@
       <% } else { %>
         <ul>
           <% task.volunteers.forEach(email => { %>
-            <li><%= email %></li>
-          <% }); %>
+            <li>
+              <%= email %>
+              <button type="button" class="dismiss-btn" data-email="<%= email %>" data-taskid="<%= task._id %>">
+                Dismiss
+              </button>
+            </li>
+          <% }) %>
         </ul>
       <% } %>
     </div>
 
-    <a href="/requester/dashboard">← Back to Dashboard</a>
+    <div class="back-link">
+      <a href="/requester/dashboard">← Back to Your Dashboard</a>
+    </div>
   </div>
+
+  <!-- Custom confirmation modal -->
+  <div id="custom-confirm">
+    <p id="confirm-text"></p>
+    <button id="confirm-yes">Yes</button>
+    <button id="confirm-no">Cancel</button>
+  </div>
+
+  <script>
+    document.querySelectorAll('.dismiss-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        const email = button.dataset.email;
+        const taskId = button.dataset.taskid;
+
+        const confirmBox = document.getElementById('custom-confirm');
+        document.getElementById('confirm-text').innerText = `Are you sure you want to dismiss ${email}?`;
+        confirmBox.style.display = 'block';
+
+        document.getElementById('confirm-yes').onclick = () => {
+          confirmBox.style.display = 'none';
+
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = '/requester/remove-volunteer';
+          form.innerHTML = `
+            <input type="hidden" name="taskId" value="${taskId}">
+            <input type="hidden" name="volunteerEmail" value="${email}">
+          `;
+          document.body.appendChild(form);
+          form.submit();
+        };
+
+        document.getElementById('confirm-no').onclick = () => {
+          confirmBox.style.display = 'none';
+        };
+      });
+    });
+  </script>
 </body>
 </html>

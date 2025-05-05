@@ -1,16 +1,17 @@
 const EventEmitter = require('events');
 
-class TaskEventEmitter extends EventEmitter {}
+class TaskObserver extends EventEmitter {}
 
-// Create a singleton instance of the emitter
-const taskEvents = new TaskEventEmitter();
+const taskEvents = new TaskObserver();
 
-// Event types
 const EVENT_TYPES = {
-  TASK_CREATED: 'task_created',
-  VOLUNTEER_JOINED: 'volunteer_joined',
-  VOLUNTEER_REMOVED: 'volunteer_removed',
-  TASK_COMPLETED: 'task_completed'
+  TASK_CREATED: 'TASK_CREATED',
+  VOLUNTEER_REMOVED: 'VOLUNTEER_REMOVED',
+  VOLUNTEER_SUBSCRIBED: 'VOLUNTEER_SUBSCRIBED'
 };
 
 module.exports = { taskEvents, EVENT_TYPES };
+taskEvents.on(EVENT_TYPES.VOLUNTEER_REMOVED, ({ task, volunteerEmail }) => {
+  console.log(`[Observer] Volunteer ${volunteerEmail} removed from task ${task.title}`);
+
+});

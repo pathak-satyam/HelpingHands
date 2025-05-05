@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Volunteers for My Tasks</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      color: #4CAF50;
+    }
+    .task-box {
+      background: #fff;
+      margin-bottom: 20px;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .task-title {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .volunteer-list {
+      list-style: none;
+      padding-left: 0;
+    }
+    .volunteer-list li {
+      background-color: #e8f5e9;
+      margin-bottom: 5px;
+      padding: 8px;
+      border-left: 4px solid #4CAF50;
+    }
+    .no-volunteers {
+      color: #777;
+    }
+
+    .back-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .back-link a {
+      color: #2196F3;
+      text-decoration: none;
+    }
+
+    .back-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>Volunteers for Your Tasks</h1>
+
+  <% if (tasks.length === 0) { %>
+    <p>You haven't created any tasks yet.</p>
+  <% } %>
+
+  <% tasks.forEach((task, index) => { %>
+    <div class="task-box">
+      <div class="task-title"><%= (index + 1) + ". " + task.title %></div>
+      <div>Subscribed by: <%= task.volunteers.length %> volunteers</div>
+      <% if (task.volunteers.length > 0) { %>
+        <ul class="volunteer-list">
+          <% task.volunteers.forEach(volunteer => { %>
+            <li><%= volunteer %></li>
+          <% }) %>
+        </ul>
+      <% } else { %>
+        <p class="no-volunteers">No volunteers yet for this task.</p>
+      <% } %>
+    </div>
+  <% }) %>
+  <div class="back-link">
+    <a href="/requester/dashboard">← Back to Your Dashboard</a>
+  </div>  
+</div>
+</body>
+</html>

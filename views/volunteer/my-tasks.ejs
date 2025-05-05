@@ -111,9 +111,24 @@
       padding: 40px 0;
       color: #777;
     }
+
+    .alert {
+      padding: 12px;
+      margin-bottom: 20px;
+      background-color: #ffdddd;
+      color: #d8000c;
+      border: 1px solid #d8000c;
+      border-radius: 6px;
+    }
   </style>
 </head>
 <body>
+  <% if (message) { %>
+    <div class="alert">
+      <%= message %>
+    </div>
+  <% } %>
+
   <div class="header">
     <h1>My Subscribed Tasks</h1>
   </div>

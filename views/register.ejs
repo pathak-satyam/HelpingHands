@@ -1,152 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Helpers Platform</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .form-container {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-        
-        input[type="text"],
-        input[type="email"],
-        input[type="password"],
-        select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        
-        .radio-group {
-            margin: 10px 0;
-        }
-        
-        .submit-btn {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            font-size: 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-        }
-        
-        .submit-btn:hover {
-            background-color: #45a049;
-        }
-        
-        .login-link {
-            text-align: center;
-            margin-top: 20px;
-        }
-        
-        .error-message {
-            color: #d32f2f;
-            background-color: #ffebee;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            display: <%= locals.error ? 'block' : 'none' %>;
-        }
-
-        .flex {
-          display: flex;
-          align-content: center;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register - Helpers Platform</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .form-container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    .submit-btn {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+    .submit-btn:hover {
+      background-color: #45a049;
+    }
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .error-message {
+      color: #d32f2f;
+      background-color: #ffebee;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      display: <%= error ? 'block' : 'none' %>;
+    }
+  </style>
 </head>
 <body>
-    <div class="form-container">
-        <h1>Create an Account</h1>
-        
-        <% if (locals.error) { %>
-            <div class="error-message">
-                <%= error %>
-            </div>
-        <% } %>
-        
-        <form action="/register" method="POST">
-            <div class="form-group">
-                <label for="fullName">Full Name</label>
-                <input type="text" id="fullName" name="fullName" required value="<%= locals.formData ? formData.fullName : '' %>">
-            </div>
-            
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" required value="<%= locals.formData ? formData.email : '' %>">
-            </div>
-            
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required minlength="8">
-                <small>Password must be at least 8 characters long</small>
-            </div>
-            
-            <div class="form-group">
-                <label for="confirmPassword">Confirm Password</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" required minlength="8">
-            </div>
-            
-            <div class="form-group">
-                <label>Account Type</label>
-                <div class="flex">
-                  <div class="radio-group flex">
-                    <input type="radio" id="requester" name="accountType" value="requester" checked>
-                    <label for="requester">Task Requester</label>
-                  </div>
-                  <div class="radio-group flex">
-                      <input type="radio" id="volunteer" name="accountType" value="volunteer">
-                      <label for="volunteer">Volunteer</label>
-                  </div>
-                </div>
-              
-            </div>
-            
-            <div class="form-group">
-                <label for="zipCode">ZIP Code</label>
-                <input type="text" id="zipCode" name="zipCode" pattern="[0-9]{5}" required value="<%= locals.formData ? formData.zipCode : '' %>">
-                <small>5-digit ZIP code</small>
-            </div>
-            
-            <button type="submit" class="submit-btn">Register</button>
-        </form>
-        
-        <div class="login-link">
-            Already have an account? <a href="/login">Login here</a>
-        </div>
+  <div class="form-container">
+    <h1>Create an Account</h1>
+
+    <% if (error) { %>
+      <div class="error-message">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <form action="/register" method="POST">
+      <div class="form-group">
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" name="fullName" required value="<%= formData ? formData.fullName : '' %>">
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" required value="<%= formData ? formData.email : '' %>">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required minlength="8">
+        <small>Password must be at least 8 characters long</small>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" required minlength="8">
+      </div>
+
+      <div class="form-group">
+        <label for="zipCode">ZIP Code</label>
+        <input type="text" id="zipCode" name="zipCode" pattern="[0-9]{5}" required value="<%= formData ? formData.zipCode : '' %>">
+        <small>5-digit ZIP code</small>
+      </div>
+
+      <button type="submit" class="submit-btn">Register</button>
+    </form>
+
+    <div class="login-link">
+      Already have an account? <a href="/login">Login here</a>
     </div>
+  </div>
 </body>
 </html>

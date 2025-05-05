@@ -3,8 +3,8 @@ const router = express.Router();
 const authController = require('../controllers/authController');
 
 router.get('/', (req, res) => {
-  res.redirect('/login')
-})
+  res.redirect('/login');
+});
 
 router.get('/login', authController.showLogin);
 router.post('/login', authController.login);
@@ -14,6 +14,6 @@ router.post('/register', authController.register);
 
 router.get('/logout', authController.logout);
 
-console.log('Auth Routes imported')
+console.log('Auth Routes imported');
 
 module.exports = router;

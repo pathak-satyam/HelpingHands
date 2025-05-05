@@ -173,7 +173,7 @@
                             <span class="volunteer-count"><%= task.volunteers.length %></span>
                         </div>
                         <div style="display: flex; gap: 10px;">
-                            <a href="/tasks/<%= task._id %>" class="btn btn-secondary" style="flex: 1;">Details</a>
+                            <!-- <a href="/tasks/<%= task._id %>" class="btn btn-secondary" style="flex: 1;">Details</a> -->
                             <form action="/volunteer/tasks/<%= task._id %>/volunteer" method="POST" style="flex: 1;">
                                 <button type="submit" class="btn">Volunteer</button>
                             </form>
