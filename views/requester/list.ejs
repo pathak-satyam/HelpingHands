@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task List</title>
+    <style>
+        /* Add your CSS styles here */
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; }
+        .task-list { list-style: none; padding: 0; }
+        .task-item { border: 1px solid #ddd; margin-bottom: 10px; padding: 15px; border-radius: 4px; }
+        .btn { background: #4CAF50; color: white; padding: 8px 12px; border: none; cursor: pointer; border-radius: 4px; }
+        .btn-danger { background: #f44336; }
+        .header { display: flex; justify-content: space-between; align-items: center; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Task List </h1>
+        <% if (isOwner) { %>
+            <a href="/tasks/create" class="btn">Create New Task</a>
+        <% } %>
+        <a class="" href="/logout">Logout</a>
+    </div>
+
+    <% if (tasks.length === 0) { %>
+        <p>No tasks available.</p>
+    <% } else { %>
+        <ul class="task-list">
+            <% tasks.forEach(task => { %>
+                <li class="task-item">
+                    <h3><%= task.title %></h3>
+                    <p><%= task.description %></p>
+                    <p>Volunteers: <%= task.volunteers.length %></p>
+                    <a href="/requester/<%= task._id %>" class="btn">View Details</a>
+                    <form action="/requester/<%= task._id %>?_method=DELETE" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this task?')">Delete</button>
+                    </form>
+                </li>
+            <% }); %>
+        </ul>
+    <% } %>
+
+    <div>
+        <a href="/requester/statistics">View Task Statistics</a>
+    </div>
+</body>
+</html>

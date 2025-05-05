@@ -1,0 +1,19 @@
+# Node modules (should never be pushed)
+node_modules/
+
+# Environment variable file
+.env
+
+# OS files
+.DS_Store
+
+# Logs
+*.log
+
+# Optional npm/yarn files
+package-lock.json
+yarn.lock
+
+# IDE/Editor settings
+.vscode/
+.idea/
