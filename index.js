@@ -45,12 +45,14 @@ app.use((req, res, next) => {
   next();
 });
 
+// Support method override for forms
+app.use(methodOverride('_method')); 
+
 // Routes
 app.use('/', authRoutes);
 app.use('/requester', taskRoutes);
 app.use('/volunteer', volunteerRoutes);
 app.use('/tasks', taskRoutes);
-
 // Connect to MongoDB and start server
 (async () => {
   try {
